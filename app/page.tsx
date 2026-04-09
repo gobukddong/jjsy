@@ -199,7 +199,7 @@ export default function Page() {
                 <div className="rounded-xl overflow-hidden bg-zinc-900 aspect-video relative">
                   {playingVideoId === video.id ? (
                     <iframe
-                      src={`https://www.youtube.com/embed/${video.id === video.youtube_id ? video.id : video.youtube_id}?autoplay=1`}
+                      src={`https://www.youtube.com/embed/${video.youtube_id}?autoplay=1`}
                       allow="autoplay; fullscreen"
                       allowFullScreen
                       className="w-full h-full border-0"
@@ -211,29 +211,32 @@ export default function Page() {
                         src={video.thumbnail_url}
                         alt={video.title}
                         className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-all duration-300"
-                        onClick={() => setPlayingVideoId(video.youtube_id)}
+                        onClick={() => setPlayingVideoId(video.id)}
                       />
-                      {/* Edit Button */}
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setSelectedVideo(video)
-                          setIsVideoModalOpen(true)
-                        }}
-                        className="absolute bottom-2 right-2 p-2 bg-black/60 backdrop-blur-md rounded-full border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-white/70 hover:text-white"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
                     </div>
                   )}
                 </div>
 
                 {/* Video Info */}
-                <div className="p-3">
-                  <h2 className="text-zinc-100 text-base font-medium line-clamp-2 mb-1">
-                    {video.title}
-                  </h2>
-                  <p className="text-sm text-zinc-500 font-medium">{video.video_date}</p>
+                <div className="p-3 flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-zinc-100 text-base font-medium line-clamp-2 mb-1">
+                      {video.title}
+                    </h2>
+                    <p className="text-sm text-zinc-500 font-medium">{video.video_date}</p>
+                  </div>
+                  
+                  {/* Edit Button: Moved for Mobile Accessibility */}
+                  <button 
+                    onClick={() => {
+                      setSelectedVideo(video)
+                      setIsVideoModalOpen(true)
+                    }}
+                    className="p-2 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800 rounded-full transition-colors cursor-pointer flex-shrink-0 mt-0.5"
+                    aria-label="영상 정보 수정"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </button>
                 </div>
               </article>
             ))}
