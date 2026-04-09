@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono, Cormorant_Garamond } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { ThemeProvider } from '@/components/theme-provider'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -34,10 +35,17 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="ko">
-      <body className={`bg-black text-white font-sans antialiased ${cormorant.variable}`}>
-        {children}
-        {process.env.NODE_ENV === 'production' && <Analytics />}
+    <html lang="ko" suppressHydrationWarning>
+      <body className={`bg-white dark:bg-black text-zinc-900 dark:text-white font-sans antialiased ${cormorant.variable} transition-colors duration-300`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+          disableTransitionOnChange={false} // 애니메이션 적용을 위해 false 
+        >
+          {children}
+          {process.env.NODE_ENV === 'production' && <Analytics />}
+        </ThemeProvider>
       </body>
     </html>
   )

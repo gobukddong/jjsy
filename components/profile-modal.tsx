@@ -86,26 +86,26 @@ export default function ProfileModal({ userId, onClose, onUpdate }: ProfileModal
   }
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-sm bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800 shadow-2xl animate-in fade-in zoom-in duration-200">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 dark:bg-black/60 backdrop-blur-sm transition-colors duration-300">
+      <div className="w-full max-w-sm bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-2xl animate-in fade-in zoom-in duration-200 transition-colors">
         <div className="p-6 flex flex-col items-center">
           <div className="w-full flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-white">프로필 설정</h2>
-            <button onClick={onClose} className="p-1 hover:bg-zinc-800 rounded-full transition-colors cursor-pointer">
-              <X className="w-6 h-6 text-zinc-400" />
+            <h2 className="text-xl font-bold text-zinc-900 dark:text-white">프로필 설정</h2>
+            <button onClick={onClose} className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors cursor-pointer">
+              <X className="w-6 h-6 text-zinc-500 dark:text-zinc-400" />
             </button>
           </div>
 
           {/* Avatar Upload Sector */}
           <div className="relative group mb-8">
-            <div className="w-24 h-24 rounded-full overflow-hidden bg-zinc-800 border-2 border-[#862633] flex items-center justify-center shadow-inner">
+            <div className="w-24 h-24 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 border-2 border-[#009bcb] dark:border-[#862633] flex items-center justify-center shadow-inner transaction-colors">
               {avatarUrl ? (
                 <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
               ) : (
-                <div className="text-3xl font-bold text-zinc-600">?</div>
+                <div className="text-3xl font-bold text-zinc-400 dark:text-zinc-600">?</div>
               )}
             </div>
-            <label className="absolute bottom-0 right-0 p-2 bg-[#862633] rounded-full cursor-pointer hover:bg-[#6a1d26] transition-colors shadow-lg active:scale-90 transform duration-75">
+            <label className="absolute bottom-0 right-0 p-2 bg-[#009bcb] hover:bg-[#007a9e] dark:bg-[#862633] dark:hover:bg-[#6a1d26] rounded-full cursor-pointer transition-colors shadow-lg active:scale-90 transform duration-75">
               {uploading ? <Loader2 className="w-4 h-4 text-white animate-spin" /> : <Camera className="w-4 h-4 text-white" />}
               <input type="file" className="hidden" accept="image/*" onChange={uploadAvatar} disabled={uploading} />
             </label>
@@ -119,14 +119,14 @@ export default function ProfileModal({ userId, onClose, onUpdate }: ProfileModal
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="이름을 입력하세요"
-                className="w-full bg-zinc-800 text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#862633] transition-all"
+                className="w-full bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#009bcb] dark:focus:ring-[#862633] transition-all"
               />
             </div>
 
             <button
               onClick={updateProfile}
               disabled={saving || uploading}
-              className="w-full bg-[#862633] hover:bg-[#6a1d26] disabled:opacity-50 text-white font-bold py-4 rounded-xl mt-4 shadow-lg transition-all active:scale-[0.98] cursor-pointer"
+              className="w-full bg-[#009bcb] hover:bg-[#007a9e] dark:bg-[#862633] dark:hover:bg-[#6a1d26] disabled:opacity-50 text-white font-bold py-4 rounded-xl mt-4 shadow-lg transition-all active:scale-[0.98] cursor-pointer"
             >
               {saving ? '저장 중...' : '변경사항 저장'}
             </button>

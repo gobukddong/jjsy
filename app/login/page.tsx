@@ -31,9 +31,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+    <div className="min-h-screen bg-zinc-50 dark:bg-black flex items-center justify-center p-4 transition-colors duration-300">
       <div className="w-full max-w-sm">
-        <h1 className="text-white text-2xl font-bold text-center mb-8">로그인</h1>
+        <h1 className="text-zinc-900 dark:text-white text-2xl font-bold text-center mb-8">로그인</h1>
         <form onSubmit={handleLogin} className="flex flex-col gap-4">
           <input
             id="email"
@@ -41,7 +41,7 @@ export default function LoginPage() {
             placeholder="아이디"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="bg-zinc-900 text-white rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-[#862633]"
+            className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-200 dark:border-transparent rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-[#009bcb] dark:focus:ring-[#862633] shadow-sm dark:shadow-none transition-colors"
             required
           />
           <input
@@ -50,15 +50,15 @@ export default function LoginPage() {
             placeholder="비밀번호"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="bg-zinc-900 text-white rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-[#862633]"
+            className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-200 dark:border-transparent rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-[#009bcb] dark:focus:ring-[#862633] shadow-sm dark:shadow-none transition-colors"
             required
           />
-          {error && <p className="text-red-400 text-sm text-center">{error}</p>}
+          {error && <p className="text-red-500 dark:text-red-400 text-sm text-center font-medium">{error}</p>}
           <button
             id="login-btn"
             type="submit"
             disabled={loading}
-            className="bg-[#862633] hover:bg-[#6a1d26] disabled:opacity-50 text-white rounded-lg py-3 font-medium transition-colors"
+            className="bg-[#009bcb] hover:bg-[#007a9e] dark:bg-[#862633] dark:hover:bg-[#6a1d26] disabled:opacity-50 text-white rounded-lg py-3 font-medium transition-colors"
           >
             {loading ? '로그인 중...' : '로그인'}
           </button>

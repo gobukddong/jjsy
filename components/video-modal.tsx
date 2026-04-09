@@ -117,19 +117,19 @@ export default function VideoModal({ video, onClose, onUpdate }: VideoModalProps
   }
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="bg-zinc-900 w-full max-w-md rounded-3xl border border-zinc-800 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 dark:bg-black/80 backdrop-blur-sm transition-colors duration-300">
+      <div className="bg-white dark:bg-zinc-900 w-full max-w-md rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 transition-colors">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-white">
+            <h2 className="text-xl font-bold text-zinc-900 dark:text-white">
               {video ? '영상 정보 수정' : '새로운 영상 추가'}
             </h2>
-            <button onClick={onClose} className="p-1 hover:bg-zinc-800 rounded-full transition-colors cursor-pointer">
-              <X className="w-6 h-6 text-zinc-400" />
+            <button onClick={onClose} className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors cursor-pointer">
+              <X className="w-6 h-6 text-zinc-500 dark:text-zinc-400" />
             </button>
           </div>
 
-          <div className="space-y-4">
+            <div className="space-y-4">
             {/* 유튜브 링크 */}
             <div>
               <label className="flex items-center gap-2 text-xs text-zinc-500 ml-1 mb-1.5 font-medium">
@@ -140,7 +140,7 @@ export default function VideoModal({ video, onClose, onUpdate }: VideoModalProps
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://youtu.be/..."
-                className="w-full bg-zinc-800 text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#862633] transition-all"
+                className="w-full bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#009bcb] dark:focus:ring-[#862633] transition-all"
               />
             </div>
 
@@ -154,7 +154,7 @@ export default function VideoModal({ video, onClose, onUpdate }: VideoModalProps
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="똥"
-                className="w-full bg-zinc-800 text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#862633] transition-all"
+                className="w-full bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#009bcb] dark:focus:ring-[#862633] transition-all"
               />
             </div>
 
@@ -168,7 +168,7 @@ export default function VideoModal({ video, onClose, onUpdate }: VideoModalProps
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 placeholder="2024. 02. 26"
-                className="w-full bg-zinc-800 text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#862633] transition-all"
+                className="w-full bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#009bcb] dark:focus:ring-[#862633] transition-all"
               />
             </div>
 
@@ -177,7 +177,7 @@ export default function VideoModal({ video, onClose, onUpdate }: VideoModalProps
                 <button
                   onClick={() => setShowConfirmDelete(true)}
                   disabled={deleting || saving}
-                  className="flex-1 bg-zinc-800 hover:bg-red-900/40 text-red-500 border border-red-900/20 font-bold py-4 rounded-xl shadow-lg transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
+                  className="flex-1 bg-red-50 dark:bg-zinc-800 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-500 border border-red-200 dark:border-red-900/20 font-bold py-4 rounded-xl shadow-lg transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
                 >
                   <Trash2 className="w-5 h-5" />
                   삭제
@@ -186,7 +186,7 @@ export default function VideoModal({ video, onClose, onUpdate }: VideoModalProps
               <button
                 onClick={handleSave}
                 disabled={saving || deleting}
-                className={`grow-[2] bg-[#862633] hover:bg-[#6a1d26] text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2`}
+                className={`grow-[2] bg-[#009bcb] hover:bg-[#007a9e] dark:bg-[#862633] dark:hover:bg-[#6a1d26] text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2`}
               >
                 {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : '저장하기'}
               </button>
@@ -197,23 +197,23 @@ export default function VideoModal({ video, onClose, onUpdate }: VideoModalProps
 
       {/* 커스텀 삭제 확인 모달 */}
       {showConfirmDelete && (
-        <div className="absolute inset-0 z-[110] flex items-center justify-center p-6 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="bg-zinc-900 w-full max-w-xs rounded-3xl border border-zinc-800 p-6 shadow-2xl text-center">
-            <div className="w-14 h-14 bg-red-900/20 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="absolute inset-0 z-[110] flex items-center justify-center p-6 bg-black/40 dark:bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-zinc-900 w-full max-w-xs rounded-3xl border border-zinc-200 dark:border-zinc-800 p-6 shadow-2xl text-center transition-colors">
+            <div className="w-14 h-14 bg-red-50 dark:bg-red-900/20 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-100 dark:border-transparent">
               <Trash2 className="w-7 h-7" />
             </div>
-            <h3 className="text-lg font-bold text-white mb-2">엥?</h3>
-            <p className="text-sm text-zinc-400 mb-6">삭제된 영상은 상윤이가 복구해줍니다.</p>
+            <h3 className="text-lg font-bold text-zinc-900 dark:text-white mb-2">엥?</h3>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6">삭제된 영상은 상윤이가 복구해줍니다.</p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowConfirmDelete(false)}
-                className="flex-1 bg-zinc-800 text-zinc-300 font-bold py-3 rounded-xl hover:bg-zinc-700 transition-colors cursor-pointer"
+                className="flex-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-bold py-3 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
               >
                 취소
               </button>
               <button
                 onClick={handleDelete}
-                className="flex-1 bg-red-600 text-white font-bold py-3 rounded-xl hover:bg-red-700 transition-colors cursor-pointer"
+                className="flex-1 bg-red-600 text-white font-bold py-3 rounded-xl hover:bg-red-700 transition-colors cursor-pointer shadow-md"
               >
                 {deleting ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : '삭제'}
               </button>
