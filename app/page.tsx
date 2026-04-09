@@ -1,68 +1,12 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Home, MessageCircle, Send, LogOut, User as UserIcon, UserCircle } from 'lucide-react'
+import { Home, MessageCircle, Send, LogOut, User as UserIcon, UserCircle, Plus, Edit2, X } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import type { User } from '@supabase/supabase-js'
 import ProfileModal from '@/components/profile-modal'
-
-const videos = [
-  {
-    id: 'M1XWaf28UHg',
-    title: '포디',
-    date: '2025. 09. 12',
-    thumbnail: 'https://i.ytimg.com/vi/M1XWaf28UHg/hqdefault.jpg'
-  },
-  {
-    id: 'T7T3-iu-EXM',
-    title: '케이키만들기',
-    date: '2025. 12. 28',
-    thumbnail: 'https://i.ytimg.com/vi/T7T3-iu-EXM/hqdefault.jpg'
-  },
-  {
-    id: 'RJ0Q81EAgNM',
-    title: '청계천',
-    date: '2025. 09. 26',
-    thumbnail: 'https://i.ytimg.com/vi/RJ0Q81EAgNM/hqdefault.jpg'
-  },
-  {
-    id: 'o2_QPs4pfso',
-    title: '찜질방',
-    date: '2024. 11. 30',
-    thumbnail: 'https://i.ytimg.com/vi/o2_QPs4pfso/hqdefault.jpg'
-  },
-  {
-    id: 'Ssox6VAuTEM',
-    title: 'Ssing 기술 시연',
-    date: '2025. 10. 09',
-    thumbnail: 'https://i.ytimg.com/vi/Ssox6VAuTEM/hqdefault.jpg'
-  },
-  {
-    id: 'Wtqp8L60TXw',
-    title: '카페 브이로그',
-    date: '2024. 11. 23',
-    thumbnail: 'https://i.ytimg.com/vi/Wtqp8L60TXw/hqdefault.jpg'
-  },
-  {
-    id: 'xP_0qVws0_k',
-    title: '남산타워',
-    date: '2025. 01. 01',
-    thumbnail: 'https://i.ytimg.com/vi/xP_0qVws0_k/hqdefault.jpg'
-  },
-  {
-    id: 'uU4ed-FiVCU',
-    title: '오늘만 i love you',
-    date: '2025. 07. 27',
-    thumbnail: 'https://i.ytimg.com/vi/uU4ed-FiVCU/hqdefault.jpg'
-  },
-  {
-    id: 'w7JKtf3KeSU',
-    title: '덴지진주',
-    date: '2025. 10. 24',
-    thumbnail: 'https://i.ytimg.com/vi/w7JKtf3KeSU/hqdefault.jpg'
-  },
-]
+import VideoModal from '@/components/video-modal'
 
 type Message = {
   id: string
@@ -75,33 +19,58 @@ type Message = {
   }
 }
 
+type Video = {
+  id: string
+  youtube_id: string
+  title: string
+  video_date: string
+  thumbnail_url: string
+}
+
 export default function Page() {
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
+  const [userProfile, setUserProfile] = useState<{ full_name: string | null, avatar_url: string | null } | null>(null)
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'home' | 'chat'>('home')
   const [messages, setMessages] = useState<Message[]>([])
+  const [videos, setVideos] = useState<Video[]>([])
   const [inputValue, setInputValue] = useState('')
   const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
+  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null)
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
+  // 로그인 체크 및 정보 로드
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) router.push('/login')
-      else setUser(data.user)
+      if (!data.user) {
+        router.push('/login')
+      } else {
+        setUser(data.user)
+        fetchUserProfile(data.user.id)
+      }
     })
   }, [router])
 
+  const fetchUserProfile = async (userId: string) => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('full_name, avatar_url')
+      .eq('id', userId)
+      .single()
+    if (data) setUserProfile(data)
+  }
+
+  // 데이터 로드
   useEffect(() => {
     if (!user) return
+    fetchVideos()
+    fetchMessages()
 
-    supabase
-      .from('messages')
-      .select('*, profiles(*)')
-      .order('created_at', { ascending: true })
-      .limit(100)
-      .then(({ data }) => { if (data) setMessages(data as Message[]) })
-
+    // 메시지 실시간 구독
     const channel = supabase
       .channel('messages-channel')
       .on(
@@ -114,9 +83,7 @@ export default function Page() {
             .select('*')
             .eq('id', newMessage.user_id)
             .single()
-          
           const messageWithProfile = { ...newMessage, profiles: profile }
-
           setMessages((prev) => {
             if (prev.find((m) => m.id === newMessage.id)) return prev
             return [...prev, messageWithProfile]
@@ -131,6 +98,23 @@ export default function Page() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  const fetchVideos = async () => {
+    const { data } = await supabase
+      .from('videos')
+      .select('*')
+      .order('created_at', { ascending: false })
+    if (data) setVideos(data)
+  }
+
+  const fetchMessages = async () => {
+    const { data } = await supabase
+      .from('messages')
+      .select('*, profiles(*)')
+      .order('created_at', { ascending: true })
+      .limit(100)
+    if (data) setMessages(data as Message[])
+  }
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || !user) return
@@ -162,15 +146,6 @@ export default function Page() {
     }
   }
 
-  const refreshMessages = () => {
-    supabase
-      .from('messages')
-      .select('*, profiles(*)')
-      .order('created_at', { ascending: true })
-      .limit(100)
-      .then(({ data }) => { if (data) setMessages(data as Message[]) })
-  }
-
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push('/login')
@@ -180,57 +155,96 @@ export default function Page() {
 
   return (
     <div className="min-h-screen bg-black text-white">
+      {/* Top Header: YouTube Style Realignment */}
       <header className="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-md border-b border-zinc-900">
-        <div className="h-14 flex items-center justify-between px-4">
-          <button onClick={() => setIsProfileOpen(true)} className="p-2 hover:bg-zinc-800 rounded-full transition-colors cursor-pointer" aria-label="프로필 설정">
-            <UserCircle className="w-6 h-6 text-zinc-400" />
-          </button>
-          <h1 className="text-lg font-semibold text-white">진주 & 상윤</h1>
-          <button onClick={handleLogout} className="p-2 hover:bg-zinc-800 rounded-full transition-colors cursor-pointer" aria-label="로그아웃">
-            <LogOut className="w-5 h-5 text-zinc-400" />
-          </button>
+        <div className="h-16 flex items-center justify-between px-6">
+          <h1 className="text-3xl font-[family-name:var(--font-cormorant)] italic font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white via-zinc-200 to-zinc-500">
+            Our Home
+          </h1>
+          <div className="flex items-center gap-3">
+            {/* Add Video Button: Dark/Black Style */}
+            <button
+              onClick={() => {
+                setSelectedVideo(null)
+                setIsVideoModalOpen(true)
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-b from-zinc-800 to-black text-zinc-100 rounded-full font-bold text-sm shadow-xl hover:scale-105 hover:bg-zinc-800 border border-zinc-700 transition-all cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>추가</span>
+            </button>
+
+            <button 
+              onClick={() => setIsProfileMenuOpen(true)} 
+              className="w-10 h-10 rounded-full bg-zinc-800 border-2 border-zinc-700 overflow-hidden hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-lg"
+            >
+              {userProfile?.avatar_url ? (
+                <img src={userProfile.avatar_url} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <UserCircle className="w-full h-full text-zinc-400" />
+              )}
+            </button>
+          </div>
         </div>
       </header>
 
-      <main className="pt-14 pb-20">
+      {/* Main Content */}
+      <main className="pt-16 pb-20">
         {activeTab === 'home' ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
+          // Video Feed
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 relative">
             {videos.map((video) => (
-              <article key={video.id} className="w-full">
-                <div className="rounded-xl overflow-hidden">
+              <article key={video.id} className="w-full relative group">
+                {/* Video Player or Thumbnail */}
+                <div className="rounded-xl overflow-hidden bg-zinc-900 aspect-video relative">
                   {playingVideoId === video.id ? (
                     <iframe
-                      src={`https://www.youtube.com/embed/${video.id}?autoplay=1`}
+                      src={`https://www.youtube.com/embed/${video.id === video.youtube_id ? video.id : video.youtube_id}?autoplay=1`}
                       allow="autoplay; fullscreen"
                       allowFullScreen
-                      className="w-full aspect-video border-0"
+                      className="w-full h-full border-0"
                       title={video.title}
                     />
                   ) : (
-                    <img
-                      src={video.thumbnail}
-                      alt={video.title}
-                      className="w-full aspect-video object-cover cursor-pointer hover:opacity-90 transition-opacity"
-                      onClick={() => setPlayingVideoId(video.id)}
-                    />
+                    <div className="relative w-full h-full group">
+                      <img
+                        src={video.thumbnail_url}
+                        alt={video.title}
+                        className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-all duration-300"
+                        onClick={() => setPlayingVideoId(video.youtube_id)}
+                      />
+                      {/* Edit Button */}
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setSelectedVideo(video)
+                          setIsVideoModalOpen(true)
+                        }}
+                        className="absolute bottom-2 right-2 p-2 bg-black/60 backdrop-blur-md rounded-full border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-white/70 hover:text-white"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   )}
                 </div>
+
+                {/* Video Info */}
                 <div className="p-3">
-                  <h2 className="text-white text-base font-medium line-clamp-2 mb-1">
+                  <h2 className="text-zinc-100 text-base font-medium line-clamp-2 mb-1">
                     {video.title}
                   </h2>
-                  <p className="text-sm text-gray-400">{video.date}</p>
+                  <p className="text-sm text-zinc-500 font-medium">{video.video_date}</p>
                 </div>
               </article>
             ))}
           </div>
         ) : (
+          // Chat View
           <div className="flex flex-col" style={{ height: 'calc(100vh - 7rem)' }}>
             <div className="flex-1 overflow-y-auto flex flex-col gap-1 p-4 bg-black">
               {messages.map((msg, index) => {
                 const isMe = msg.user_id === user.id
                 const profile = msg.profiles
-                
                 const currentDate = new Date(msg.created_at).toLocaleDateString('ko-KR', {
                   year: 'numeric', month: 'long', day: 'numeric', weekday: 'long',
                 })
@@ -240,15 +254,12 @@ export default function Page() {
                     })
                   : null
                 const showDateHeader = currentDate !== prevDate
-
                 const isSameUserAsPrev = index > 0 && messages[index - 1].user_id === msg.user_id && !showDateHeader
                 const nextMsg = messages[index + 1]
                 const isSameUserAsNext = nextMsg && nextMsg.user_id === msg.user_id
-                
                 const currentMsgTime = new Date(msg.created_at).setSeconds(0, 0)
                 const nextMsgTime = nextMsg ? new Date(nextMsg.created_at).setSeconds(0, 0) : null
                 const isSameMinuteAsNext = isSameUserAsNext && currentMsgTime === nextMsgTime
-
                 const timeStr = new Date(msg.created_at).toLocaleTimeString('ko-KR', {
                   hour: '2-digit', minute: '2-digit', hour12: true,
                 })
@@ -262,7 +273,6 @@ export default function Page() {
                         </div>
                       </div>
                     )}
-                    
                     <div className={`flex ${isMe ? 'justify-end' : 'justify-start items-start gap-2'}`}>
                       {!isMe && (
                         <div className="w-10 h-10 flex-shrink-0">
@@ -312,6 +322,7 @@ export default function Page() {
               <div ref={messagesEndRef} />
             </div>
 
+            {/* Chat Input */}
             <div className="border-t border-zinc-900 p-4 flex gap-2">
               <input
                 type="text"
@@ -321,7 +332,7 @@ export default function Page() {
                 placeholder="메시지를 입력하세요..."
                 className="flex-1 bg-zinc-900 text-white rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-[#862633]"
               />
-              <button onClick={handleSendMessage} className="bg-[#862633] hover:bg-[#6a1d26] transition-colors rounded-lg p-2">
+              <button onClick={handleSendMessage} className="bg-[#862633] hover:bg-[#6a1d26] transition-colors rounded-lg p-2 cursor-pointer">
                 <Send className="w-5 h-5 text-white" />
               </button>
             </div>
@@ -329,25 +340,133 @@ export default function Page() {
         )}
       </main>
 
+      {/* Bottom Navigation */}
       <nav className="fixed bottom-0 w-full z-50 bg-zinc-950 border-t border-zinc-900 pb-safe">
         <div className="h-16 flex items-center justify-around">
           <button onClick={() => setActiveTab('home')} className="flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors cursor-pointer">
             <Home className="w-6 h-6" style={{ color: activeTab === 'home' ? '#862633' : '#71717a' }} />
-            <span className="text-xs" style={{ color: activeTab === 'home' ? '#862633' : '#71717a' }}>홈</span>
+            <span className="text-xs" style={{ color: activeTab === 'home' ? '#862633' : '#71717a' }}></span>
           </button>
           <button onClick={() => setActiveTab('chat')} className="flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors cursor-pointer">
             <MessageCircle className="w-6 h-6" style={{ color: activeTab === 'chat' ? '#862633' : '#71717a' }} />
-            <span className="text-xs" style={{ color: activeTab === 'chat' ? '#862633' : '#71717a' }}>채팅</span>
+            <span className="text-xs" style={{ color: activeTab === 'chat' ? '#862633' : '#71717a' }}></span>
           </button>
         </div>
       </nav>
+
+      {/* Profile Menu Dropdown (YouTube Style) */}
+      {isProfileMenuOpen && (
+        <div 
+          className="fixed inset-0 z-[100] flex justify-end p-4 animate-in fade-in duration-200"
+          onClick={() => setIsProfileMenuOpen(false)}
+        >
+          {/* Transparent backdrop for closing */}
+          <div className="absolute inset-0 bg-black/20" />
+          
+          <div 
+            className="relative top-12 w-full max-w-[280px] h-fit bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 shadow-[0_4px_30px_rgba(0,0,0,0.5)] animate-in zoom-in-95 slide-in-from-top-2 duration-200 pointer-events-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* User Info Header */}
+            <div className="flex items-start gap-4 p-5 pb-4 border-b border-zinc-800">
+              <div className="w-10 h-10 rounded-full bg-zinc-800 border border-zinc-700 overflow-hidden flex-shrink-0">
+                {userProfile?.avatar_url ? (
+                  <img src={userProfile.avatar_url} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <UserCircle className="w-full h-full text-zinc-400" />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-white font-bold truncate text-lg mb-1">{userProfile?.full_name || '사용자'}</div>
+                <button 
+                  onClick={() => {
+                    setIsProfileMenuOpen(false)
+                    setIsProfileOpen(true)
+                  }}
+                  className="text-[#862633] text-[13px] font-bold hover:bg-[#862633]/10 px-0.5 py-0.5 rounded transition-colors"
+                >
+                  내 프로필 관리하기
+                </button>
+              </div>
+            </div>
+
+            {/* Menu Items */}
+            <div className="py-2">
+              <button
+                onClick={() => {
+                  setIsProfileMenuOpen(false)
+                  setShowLogoutConfirm(true)
+                }}
+                className="flex items-center gap-4 w-full p-3 px-5 hover:bg-zinc-800 transition-colors text-left"
+              >
+                <LogOut className="w-5 h-5 text-zinc-400" />
+                <span className="text-zinc-200 text-sm font-medium">로그아웃</span>
+              </button>
+              
+              <button
+                onClick={() => setIsProfileMenuOpen(false)}
+                className="flex items-center gap-4 w-full p-3 px-5 hover:bg-zinc-800 transition-colors text-left border-t border-zinc-800 mt-1"
+              >
+                <X className="w-5 h-5 text-zinc-400" />
+                <span className="text-zinc-400 text-sm font-medium">닫기</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Logout Confirmation Backdrop */}
+      {showLogoutConfirm && (
+        <div 
+          className="fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm flex items-end justify-center animate-in fade-in duration-300"
+          onClick={() => setShowLogoutConfirm(false)}
+        >
+          <div 
+            className="w-full max-w-md bg-zinc-900 rounded-t-[32px] p-8 border-t border-zinc-800 animate-in slide-in-from-bottom duration-300 pointer-events-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-12 h-1 bg-zinc-800 rounded-full mx-auto mb-6" />
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold text-white mb-2">오우노우</h3>
+              <p className="text-zinc-500">로그아웃 할껴?</p>
+            </div>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="flex-1 bg-zinc-800 text-white font-bold py-4 rounded-2xl hover:bg-zinc-700 transition-colors cursor-pointer"
+              >
+                아니오
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex-1 bg-[#862633] text-white font-bold py-4 rounded-2xl hover:bg-[#6a1d26] transition-colors cursor-pointer"
+              >
+                예
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modals */}
       {isProfileOpen && (
         <ProfileModal
           userId={user.id}
           onClose={() => setIsProfileOpen(false)}
-          onUpdate={refreshMessages}
+          onUpdate={fetchMessages}
+        />
+      )}
+      {isVideoModalOpen && (
+        <VideoModal
+          video={selectedVideo}
+          onClose={() => {
+            setIsVideoModalOpen(false)
+            setSelectedVideo(null)
+          }}
+          onUpdate={fetchVideos}
         />
       )}
     </div>
   )
 }
+
