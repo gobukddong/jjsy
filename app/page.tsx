@@ -31,7 +31,6 @@ export default function Page() {
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
   const [userProfile, setUserProfile] = useState<{ full_name: string | null, avatar_url: string | null } | null>(null)
-  const [playingVideoId, setPlayingVideoId] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'home' | 'chat'>('home')
   const [messages, setMessages] = useState<Message[]>([])
   const [videos, setVideos] = useState<Video[]>([])
@@ -195,26 +194,16 @@ export default function Page() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 relative">
             {videos.map((video) => (
               <article key={video.id} className="w-full relative group">
-                {/* Video Player or Thumbnail */}
+                {/* Video Player (Direct Embed for 1-click play) */}
                 <div className="rounded-xl overflow-hidden bg-zinc-900 aspect-video relative">
-                  {playingVideoId === video.id ? (
-                    <iframe
-                      src={`https://www.youtube.com/embed/${video.youtube_id}?autoplay=1`}
-                      allow="autoplay; fullscreen"
-                      allowFullScreen
-                      className="w-full h-full border-0"
-                      title={video.title}
-                    />
-                  ) : (
-                    <div className="relative w-full h-full group">
-                      <img
-                        src={video.thumbnail_url}
-                        alt={video.title}
-                        className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-all duration-300"
-                        onClick={() => setPlayingVideoId(video.id)}
-                      />
-                    </div>
-                  )}
+                  <iframe
+                    src={`https://www.youtube.com/embed/${video.youtube_id}?rel=0`}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full border-0"
+                    title={video.title}
+                    loading="lazy"
+                  />
                 </div>
 
                 {/* Video Info */}
