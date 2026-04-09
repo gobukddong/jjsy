@@ -45,6 +45,21 @@ export default function Page() {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
+  // 테마가 변경될 때 모바일 상태표시줄 색상(theme-color meta tag)도 동기화
+  useEffect(() => {
+    let metaThemeColor = document.querySelector('meta[name="theme-color"]')
+    const desiredColor = theme === 'dark' ? '#000000' : '#ffffff'
+    
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute('content', desiredColor)
+    } else {
+      metaThemeColor = document.createElement('meta')
+      metaThemeColor.setAttribute('name', 'theme-color')
+      metaThemeColor.setAttribute('content', desiredColor)
+      document.head.appendChild(metaThemeColor)
+    }
+  }, [theme])
+
   // 로그인 체크 및 정보 로드
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
