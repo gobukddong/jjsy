@@ -30,7 +30,7 @@ type Video = {
 
 export default function Page() {
   const router = useRouter()
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme, resolvedTheme } = useTheme()
   const [user, setUser] = useState<User | null>(null)
   const [userProfile, setUserProfile] = useState<{ full_name: string | null, avatar_url: string | null } | null>(null)
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null)
@@ -47,18 +47,20 @@ export default function Page() {
 
   // 테마가 변경될 때 모바일 상태표시줄 색상(theme-color meta tag)도 동기화
   useEffect(() => {
-    let metaThemeColor = document.querySelector('meta[name="theme-color"]')
-    const desiredColor = theme === 'dark' ? '#000000' : '#ffffff'
+    // 1. 기존 메타 태그 싹 다 지워서 Safari의 혼동 방지
+    const metaTags = document.querySelectorAll('meta[name="theme-color"]')
+    metaTags.forEach(tag => tag.remove())
+
+    // 2. 현재 활성화된 모드 (system 세팅 무시하고 실제 렌더링된 모드 기준)
+    const currentTheme = theme === 'system' ? resolvedTheme : theme
+    const desiredColor = currentTheme === 'dark' ? '#000000' : '#ffffff'
     
-    if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', desiredColor)
-    } else {
-      metaThemeColor = document.createElement('meta')
-      metaThemeColor.setAttribute('name', 'theme-color')
-      metaThemeColor.setAttribute('content', desiredColor)
-      document.head.appendChild(metaThemeColor)
-    }
-  }, [theme])
+    // 3. 확실한 메타 태그 하나만 다시 생성
+    const newMeta = document.createElement('meta')
+    newMeta.setAttribute('name', 'theme-color')
+    newMeta.setAttribute('content', desiredColor)
+    document.head.appendChild(newMeta)
+  }, [theme, resolvedTheme])
 
   // 로그인 체크 및 정보 로드
   useEffect(() => {
