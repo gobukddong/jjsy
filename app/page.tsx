@@ -173,7 +173,7 @@ export default function Page() {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-white transition-colors duration-300">
       {/* Top Header: YouTube Style Realignment */}
-      <header className="fixed top-0 w-full z-50 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-900 transition-colors duration-300">
+      <header className="fixed top-0 w-full z-50 bg-white/70 dark:bg-black/70 backdrop-blur-xl border-b border-zinc-200/50 dark:border-zinc-800/50 transition-colors duration-300">
         <div className="h-16 flex items-center justify-between px-6">
           <h1 className="text-3xl font-[family-name:var(--font-cormorant)] italic font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-zinc-800 via-zinc-500 to-zinc-400 dark:from-white dark:via-zinc-200 dark:to-zinc-500">
             Our Home
@@ -222,9 +222,9 @@ export default function Page() {
           // Video Feed
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 relative">
             {videos.map((video) => (
-              <article key={video.id} className="w-full relative group">
+              <article key={video.id} className="w-full relative group transition-transform duration-300 hover:scale-[1.01] active:scale-[0.98]">
                 {/* Video Player or Thumbnail */}
-                <div className="rounded-xl overflow-hidden bg-zinc-200 dark:bg-zinc-900 aspect-video relative">
+                <div className="rounded-xl overflow-hidden bg-zinc-200 dark:bg-zinc-900 aspect-video relative shadow-md group-hover:shadow-lg transition-shadow">
                   {playingVideoId === video.id ? (
                     <iframe
                       src={`https://www.youtube.com/embed/${video.youtube_id}?autoplay=1`}
@@ -372,12 +372,12 @@ export default function Page() {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 w-full z-50 bg-white dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-900 pb-safe transition-colors duration-300">
+      <nav className="fixed bottom-0 w-full z-50 bg-white/70 dark:bg-zinc-950/70 backdrop-blur-xl border-t border-zinc-200/50 dark:border-zinc-900/50 pb-safe transition-colors duration-300">
         <div className="h-16 flex items-center justify-around">
-          <button onClick={() => setActiveTab('home')} className="flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors cursor-pointer group">
-            <Home className={`w-6 h-6 transition-colors ${activeTab === 'home' ? 'text-[#009bcb] dark:text-[#862633]' : 'text-zinc-500 group-hover:text-zinc-600 dark:group-hover:text-zinc-400'}`} />
+          <button onClick={() => setActiveTab('home')} className="flex flex-col items-center justify-center gap-1 flex-1 h-full transition-all cursor-pointer group active:scale-[0.95]">
+            <Home className={`w-6 h-6 transition-transform group-active:scale-95 ${activeTab === 'home' ? 'text-[#009bcb] dark:text-[#862633]' : 'text-zinc-500 group-hover:text-zinc-600 dark:group-hover:text-zinc-400'}`} />
           </button>
-          <button onClick={() => setActiveTab('chat')} className="flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors cursor-pointer group">
+          <button onClick={() => setActiveTab('chat')} className="flex flex-col items-center justify-center gap-1 flex-1 h-full transition-all cursor-pointer group active:scale-[0.95]">
             <MessageCircle className={`w-6 h-6 transition-colors ${activeTab === 'chat' ? 'text-[#009bcb] dark:text-[#862633]' : 'text-zinc-500 group-hover:text-zinc-600 dark:group-hover:text-zinc-400'}`} />
           </button>
         </div>

@@ -91,7 +91,7 @@ export default function ProfileModal({ userId, onClose, onUpdate }: ProfileModal
         <div className="p-6 flex flex-col items-center">
           <div className="w-full flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-zinc-900 dark:text-white">프로필 설정</h2>
-            <button onClick={onClose} className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors cursor-pointer">
+            <button onClick={onClose} className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-all active:scale-90 cursor-pointer">
               <X className="w-6 h-6 text-zinc-500 dark:text-zinc-400" />
             </button>
           </div>

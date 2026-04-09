@@ -124,7 +124,7 @@ export default function VideoModal({ video, onClose, onUpdate }: VideoModalProps
             <h2 className="text-xl font-bold text-zinc-900 dark:text-white">
               {video ? '영상 정보 수정' : '새로운 영상 추가'}
             </h2>
-            <button onClick={onClose} className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors cursor-pointer">
+            <button onClick={onClose} className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-all active:scale-90 cursor-pointer">
               <X className="w-6 h-6 text-zinc-500 dark:text-zinc-400" />
             </button>
           </div>

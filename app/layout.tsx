@@ -1,11 +1,8 @@
 import type { Metadata, Viewport } from 'next'
-import { Geist, Geist_Mono, Cormorant_Garamond } from 'next/font/google'
+import { Cormorant_Garamond } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { ThemeProvider } from '@/components/theme-provider'
 import './globals.css'
-
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
 const cormorant = Cormorant_Garamond({ 
   subsets: ["latin"],
   weight: ['400', '600', '700'],
@@ -36,6 +33,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" suppressHydrationWarning>
+      <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+      </head>
       <body className={`bg-white dark:bg-black text-zinc-900 dark:text-white font-sans antialiased ${cormorant.variable} transition-colors duration-300`}>
         <ThemeProvider
           attribute="class"
