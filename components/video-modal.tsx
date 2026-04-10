@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { X, Loader2, Youtube, Calendar, Play, Trash2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { motion, AnimatePresence } from 'framer-motion'
 
 type Video = {
   id: string
@@ -117,8 +118,13 @@ export default function VideoModal({ video, onClose, onUpdate }: VideoModalProps
   }
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 dark:bg-black/80 backdrop-blur-sm transition-colors duration-300">
-      <div className="bg-white dark:bg-zinc-900 w-full max-w-md rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 transition-colors">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 dark:bg-black/80 backdrop-blur-sm">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+        className="bg-white dark:bg-zinc-900 w-full max-w-md rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 transition-colors"
+      >
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-zinc-900 dark:text-white">
@@ -193,7 +199,7 @@ export default function VideoModal({ video, onClose, onUpdate }: VideoModalProps
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* 커스텀 삭제 확인 모달 */}
       {showConfirmDelete && (

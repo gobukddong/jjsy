@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { Sparkles } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -34,10 +35,27 @@ export default function LoginPage() {
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#ffecd2] to-[#fcb69f] dark:from-[#2e1437] dark:via-[#141526] dark:to-[#172552] animate-gradient-x transition-colors duration-500">
       {/* Floating Orbs for Magical Aura */}
-      <div className="absolute top-[20%] left-[10%] w-72 h-72 bg-rose-400/30 dark:bg-purple-600/30 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[60px] animate-pulse" style={{ animationDuration: '4s' }} />
-      <div className="absolute bottom-[20%] right-[10%] w-80 h-80 bg-orange-300/30 dark:bg-pink-600/20 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[60px] animate-pulse" style={{ animationDuration: '7s' }} />
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 2, ease: "easeOut" }}
+        className="absolute top-[20%] left-[10%] w-72 h-72 bg-rose-400/30 dark:bg-purple-600/30 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[60px] animate-pulse" 
+        style={{ animationDuration: '4s' }} 
+      />
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 2, ease: "easeOut", delay: 0.5 }}
+        className="absolute bottom-[20%] right-[10%] w-80 h-80 bg-orange-300/30 dark:bg-pink-600/20 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[60px] animate-pulse" 
+        style={{ animationDuration: '7s' }} 
+      />
       
-      <div className="relative w-full max-w-[360px] z-10 px-4">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="relative w-full max-w-[360px] z-10 px-4"
+      >
         {/* Glassmorphism Panel */}
         <div className="glass-panel p-8 rounded-[2rem]">
           <div className="flex flex-col items-center mb-8">
@@ -88,7 +106,7 @@ export default function LoginPage() {
             </button>
           </form>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }

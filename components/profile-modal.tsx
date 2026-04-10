@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Camera, X, Loader2 } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 interface ProfileModalProps {
   userId: string
@@ -87,7 +88,12 @@ export default function ProfileModal({ userId, onClose, onUpdate }: ProfileModal
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 dark:bg-black/60 backdrop-blur-sm transition-colors duration-300">
-      <div className="w-full max-w-sm bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-2xl animate-in fade-in zoom-in duration-200 transition-colors">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+        className="w-full max-w-sm bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-2xl transition-colors"
+      >
         <div className="p-6 flex flex-col items-center">
           <div className="w-full flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-zinc-900 dark:text-white">프로필 설정</h2>
@@ -132,7 +138,7 @@ export default function ProfileModal({ userId, onClose, onUpdate }: ProfileModal
             </button>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }

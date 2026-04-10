@@ -8,6 +8,7 @@ import { useTheme } from 'next-themes'
 import type { User } from '@supabase/supabase-js'
 import ProfileModal from '@/components/profile-modal'
 import VideoModal from '@/components/video-modal'
+import { motion, AnimatePresence } from 'framer-motion'
 
 type Message = {
   id: string
@@ -219,158 +220,169 @@ export default function Page() {
       </header>
 
       {/* Main Content */}
-      <main className="pt-16 pb-20">
-        {activeTab === 'home' ? (
-          // Video Feed
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 relative">
-            {videos.map((video) => (
-              <article key={video.id} className="w-full relative group transition-transform duration-300 hover:scale-[1.01] active:scale-[0.98]">
-                {/* Video Player or Thumbnail */}
-                <div className="rounded-xl overflow-hidden bg-zinc-200 dark:bg-zinc-900 aspect-video relative shadow-md group-hover:shadow-lg transition-shadow">
-                  {playingVideoId === video.id ? (
-                    <iframe
-                      src={`https://www.youtube.com/embed/${video.youtube_id}?autoplay=1`}
-                      allow="autoplay; fullscreen"
-                      allowFullScreen
-                      className="w-full h-full border-0"
-                      title={video.title}
-                    />
-                  ) : (
-                    <div className="relative w-full h-full group">
-                      <img
-                        src={video.thumbnail_url}
-                        alt={video.title}
-                        className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-all duration-300"
-                        onClick={() => setPlayingVideoId(video.id)}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                {/* Video Info */}
-                <div className="p-3 flex items-start justify-between gap-3">
-                  <div className="flex-1 min-w-0">
-                    <h2 className="text-zinc-900 dark:text-zinc-100 text-base font-medium line-clamp-2 mb-1">
-                      {video.title}
-                    </h2>
-                    <p className="text-sm text-zinc-500 font-medium">{video.video_date}</p>
-                  </div>
-                  
-                  {/* Edit Button: Moved for Mobile Accessibility */}
-                  <button 
-                    onClick={() => {
-                      setSelectedVideo(video)
-                      setIsVideoModalOpen(true)
-                    }}
-                    className="p-2 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-full transition-colors cursor-pointer flex-shrink-0 mt-0.5"
-                    aria-label="영상 정보 수정"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </article>
-            ))}
-          </div>
-        ) : (
-          // Chat View
-          <div className="flex flex-col" style={{ height: 'calc(100vh - 7rem)' }}>
-            <div className="flex-1 overflow-y-auto flex flex-col gap-1 p-4 bg-zinc-50 dark:bg-black">
-              {messages.map((msg, index) => {
-                const isMe = msg.user_id === user.id
-                const profile = msg.profiles
-                const currentDate = new Date(msg.created_at).toLocaleDateString('ko-KR', {
-                  year: 'numeric', month: 'long', day: 'numeric', weekday: 'long',
-                })
-                const prevDate = index > 0 
-                  ? new Date(messages[index - 1].created_at).toLocaleDateString('ko-KR', {
-                      year: 'numeric', month: 'long', day: 'numeric', weekday: 'long',
-                    })
-                  : null
-                const showDateHeader = currentDate !== prevDate
-                const isSameUserAsPrev = index > 0 && messages[index - 1].user_id === msg.user_id && !showDateHeader
-                const nextMsg = messages[index + 1]
-                const isSameUserAsNext = nextMsg && nextMsg.user_id === msg.user_id
-                const currentMsgTime = new Date(msg.created_at).setSeconds(0, 0)
-                const nextMsgTime = nextMsg ? new Date(nextMsg.created_at).setSeconds(0, 0) : null
-                const isSameMinuteAsNext = isSameUserAsNext && currentMsgTime === nextMsgTime
-                const timeStr = new Date(msg.created_at).toLocaleTimeString('ko-KR', {
-                  hour: '2-digit', minute: '2-digit', hour12: true,
-                })
-
-                return (
-                  <div key={msg.id} className={`flex flex-col ${isSameUserAsPrev ? 'mt-1' : 'mt-4'}`}>
-                    {showDateHeader && (
-                      <div className="flex justify-center my-6">
-                        <div className="bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-200 text-[12px] px-4 py-1.5 rounded-full border border-zinc-300 dark:border-zinc-700 font-semibold">
-                          {currentDate}
-                        </div>
-                      </div>
-                    )}
-                    <div className={`flex ${isMe ? 'justify-end' : 'justify-start items-start gap-2'}`}>
-                      {!isMe && (
-                        <div className="w-10 h-10 flex-shrink-0">
-                          {!isSameUserAsPrev ? (
-                            <div className="w-10 h-10 rounded-xl overflow-hidden bg-zinc-200 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700">
-                              {profile?.avatar_url ? (
-                                <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-zinc-400 dark:text-zinc-600">
-                                  <UserIcon className="w-5 h-5" />
-                                </div>
-                              )}
-                            </div>
-                          ) : (
-                            <div className="w-10" />
-                          )}
+      <main className="pt-16 pb-20 overflow-x-hidden">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, x: activeTab === 'home' ? -20 : 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: activeTab === 'home' ? -20 : 20 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="w-full"
+          >
+            {activeTab === 'home' ? (
+              // Video Feed
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 relative">
+                {videos.map((video) => (
+                  <article key={video.id} className="w-full relative group transition-transform duration-300 hover:scale-[1.01] active:scale-[0.98]">
+                    {/* Video Player or Thumbnail */}
+                    <div className="rounded-xl overflow-hidden bg-zinc-200 dark:bg-zinc-900 aspect-video relative shadow-md group-hover:shadow-lg transition-shadow">
+                      {playingVideoId === video.id ? (
+                        <iframe
+                          src={`https://www.youtube.com/embed/${video.youtube_id}?autoplay=1`}
+                          allow="autoplay; fullscreen"
+                          allowFullScreen
+                          className="w-full h-full border-0"
+                          title={video.title}
+                        />
+                      ) : (
+                        <div className="relative w-full h-full group">
+                          <img
+                            src={video.thumbnail_url}
+                            alt={video.title}
+                            className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-all duration-300"
+                            onClick={() => setPlayingVideoId(video.id)}
+                          />
                         </div>
                       )}
+                    </div>
+
+                    {/* Video Info */}
+                    <div className="p-3 flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <h2 className="text-zinc-900 dark:text-zinc-100 text-base font-medium line-clamp-2 mb-1">
+                          {video.title}
+                        </h2>
+                        <p className="text-sm text-zinc-500 font-medium">{video.video_date}</p>
+                      </div>
                       
-                      <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[75%]`}>
-                        {!isMe && !isSameUserAsPrev && (
-                          <span className="text-[13px] text-zinc-700 dark:text-zinc-200 mb-1.5 ml-1 font-semibold">
-                            {profile?.full_name || '익명'}
-                          </span>
-                        )}
-                        <div className={`flex items-end gap-1.5 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
-                          <div
-                            className={`px-3 py-2 rounded-2xl text-[14.5px] leading-relaxed break-all whitespace-pre-wrap ${
-                              isMe ? 'bg-[#009bcb] dark:bg-[#862633] text-white rounded-tr-none' : 'bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-transparent text-zinc-900 dark:text-white rounded-tl-none shadow-sm dark:shadow-none'
-                            }`}
-                          >
-                            {msg.text}
+                      {/* Edit Button: Moved for Mobile Accessibility */}
+                      <button 
+                        onClick={() => {
+                          setSelectedVideo(video)
+                          setIsVideoModalOpen(true)
+                        }}
+                        className="p-2 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-full transition-colors cursor-pointer flex-shrink-0 mt-0.5"
+                        aria-label="영상 정보 수정"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              // Chat View
+              <div className="flex flex-col" style={{ height: 'calc(100vh - 9rem)' }}>
+                <div className="flex-1 overflow-y-auto flex flex-col gap-1 p-4 bg-zinc-50 dark:bg-black">
+                  {messages.map((msg, index) => {
+                    const isMe = msg.user_id === user.id
+                    const profile = msg.profiles
+                    const currentDate = new Date(msg.created_at).toLocaleDateString('ko-KR', {
+                      year: 'numeric', month: 'long', day: 'numeric', weekday: 'long',
+                    })
+                    const prevDate = index > 0 
+                      ? new Date(messages[index - 1].created_at).toLocaleDateString('ko-KR', {
+                          year: 'numeric', month: 'long', day: 'numeric', weekday: 'long',
+                        })
+                      : null
+                    const showDateHeader = currentDate !== prevDate
+                    const isSameUserAsPrev = index > 0 && messages[index - 1].user_id === msg.user_id && !showDateHeader
+                    const nextMsg = messages[index + 1]
+                    const isSameUserAsNext = nextMsg && nextMsg.user_id === msg.user_id
+                    const currentMsgTime = new Date(msg.created_at).setSeconds(0, 0)
+                    const nextMsgTime = nextMsg ? new Date(nextMsg.created_at).setSeconds(0, 0) : null
+                    const isSameMinuteAsNext = isSameUserAsNext && currentMsgTime === nextMsgTime
+                    const timeStr = new Date(msg.created_at).toLocaleTimeString('ko-KR', {
+                      hour: '2-digit', minute: '2-digit', hour12: true,
+                    })
+
+                    return (
+                      <div key={msg.id} className={`flex flex-col ${isSameUserAsPrev ? 'mt-1' : 'mt-4'}`}>
+                        {showDateHeader && (
+                          <div className="flex justify-center my-6">
+                            <div className="bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-200 text-[12px] px-4 py-1.5 rounded-full border border-zinc-300 dark:border-zinc-700 font-semibold">
+                              {currentDate}
+                            </div>
                           </div>
-                          {!isSameMinuteAsNext ? (
-                            <span className="text-[11px] text-zinc-500 dark:text-zinc-400 whitespace-nowrap mb-0.5 font-medium">
-                              {timeStr}
-                            </span>
-                          ) : (
-                            <div className="w-0" />
+                        )}
+                        <div className={`flex ${isMe ? 'justify-end' : 'justify-start items-start gap-2'}`}>
+                          {!isMe && (
+                            <div className="w-10 h-10 flex-shrink-0">
+                              {!isSameUserAsPrev ? (
+                                <div className="w-10 h-10 rounded-xl overflow-hidden bg-zinc-200 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700">
+                                  {profile?.avatar_url ? (
+                                    <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+                                  ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-zinc-400 dark:text-zinc-600">
+                                      <UserIcon className="w-5 h-5" />
+                                    </div>
+                                  )}
+                                </div>
+                              ) : (
+                                <div className="w-10" />
+                              )}
+                            </div>
                           )}
+                          
+                          <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[75%]`}>
+                            {!isMe && !isSameUserAsPrev && (
+                              <span className="text-[13px] text-zinc-700 dark:text-zinc-200 mb-1.5 ml-1 font-semibold">
+                                {profile?.full_name || '익명'}
+                              </span>
+                            )}
+                            <div className={`flex items-end gap-1.5 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
+                              <div
+                                className={`px-3 py-2 rounded-2xl text-[14.5px] leading-relaxed break-all whitespace-pre-wrap ${
+                                  isMe ? 'bg-[#009bcb] dark:bg-[#862633] text-white rounded-tr-none' : 'bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-transparent text-zinc-900 dark:text-white rounded-tl-none shadow-sm dark:shadow-none'
+                                }`}
+                              >
+                                {msg.text}
+                              </div>
+                              {!isSameMinuteAsNext ? (
+                                <span className="text-[11px] text-zinc-500 dark:text-zinc-400 whitespace-nowrap mb-0.5 font-medium">
+                                  {timeStr}
+                                </span>
+                              ) : (
+                                <div className="w-0" />
+                              )}
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                )
-              })}
-              <div ref={messagesEndRef} />
-            </div>
+                    )
+                  })}
+                  <div ref={messagesEndRef} />
+                </div>
 
-            {/* Chat Input */}
-            <div className="border-t border-zinc-200 dark:border-zinc-900 bg-white dark:bg-black p-4 flex gap-2">
-              <input
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter') handleSendMessage() }}
-                placeholder="메시지를 입력하세요..."
-                className="flex-1 bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-[#009bcb] dark:focus:ring-[#862633]"
-              />
-              <button onClick={handleSendMessage} className="bg-[#009bcb] hover:bg-[#007a9e] dark:bg-[#862633] dark:hover:bg-[#6a1d26] transition-colors rounded-lg p-2 cursor-pointer shadow-sm">
-                <Send className="w-5 h-5 text-white" />
-              </button>
-            </div>
-          </div>
-        )}
+                {/* Chat Input */}
+                <div className="border-t border-zinc-200 dark:border-zinc-900 bg-white dark:bg-black p-4 flex gap-2">
+                  <input
+                    type="text"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleSendMessage() }}
+                    placeholder="메시지를 입력하세요..."
+                    className="flex-1 bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-[#009bcb] dark:focus:ring-[#862633]"
+                  />
+                  <button onClick={handleSendMessage} className="bg-[#009bcb] hover:bg-[#007a9e] dark:bg-[#862633] dark:hover:bg-[#6a1d26] transition-colors rounded-lg p-2 cursor-pointer shadow-sm">
+                    <Send className="w-5 h-5 text-white" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       {/* Bottom Navigation */}
