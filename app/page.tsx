@@ -178,7 +178,7 @@ export default function Page() {
       <header className="fixed top-0 w-full z-50 bg-white/70 dark:bg-black/70 backdrop-blur-xl border-b border-zinc-200/50 dark:border-zinc-800/50 transition-colors duration-300">
         <div className="h-16 flex items-center justify-between px-6">
           <h1 className="text-3xl font-[family-name:var(--font-cormorant)] italic font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-zinc-800 via-zinc-500 to-zinc-400 dark:from-white dark:via-zinc-200 dark:to-zinc-500">
-            Our Home
+            BBONG
           </h1>
           <div className="flex items-center gap-3">
             {/* Theme Toggle Button */}
@@ -414,7 +414,7 @@ export default function Page() {
                     setIsProfileMenuOpen(false)
                     setIsProfileOpen(true)
                   }}
-                  className="text-[#009bcb] dark:text-[#862633] text-[13px] font-bold hover:bg-[#009bcb]/10 dark:hover:bg-[#862633]/10 px-0.5 py-0.5 rounded transition-colors"
+                  className="text-[#009bcb] dark:text-[#862633] text-[13px] font-bold hover:bg-[#009bcb]/10 dark:hover:bg-[#862633]/10 px-0.5 py-0.5 rounded transition-colors cursor-pointer"
                 >
                   내 프로필 관리하기
                 </button>
@@ -428,7 +428,7 @@ export default function Page() {
                   setIsProfileMenuOpen(false)
                   setShowLogoutConfirm(true)
                 }}
-                className="flex items-center gap-4 w-full p-3 px-5 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-left"
+                className="flex items-center gap-4 w-full p-3 px-5 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-left cursor-pointer"
               >
                 <LogOut className="w-5 h-5 text-zinc-500 dark:text-zinc-400" />
                 <span className="text-zinc-700 dark:text-zinc-200 text-sm font-medium">로그아웃</span>
@@ -436,7 +436,7 @@ export default function Page() {
               
               <button
                 onClick={() => setIsProfileMenuOpen(false)}
-                className="flex items-center gap-4 w-full p-3 px-5 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-left border-t border-zinc-200 dark:border-zinc-800 mt-1"
+                className="flex items-center gap-4 w-full p-3 px-5 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-left border-t border-zinc-200 dark:border-zinc-800 mt-1 cursor-pointer"
               >
                 <X className="w-5 h-5 text-zinc-500 dark:text-zinc-400" />
                 <span className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">닫기</span>
