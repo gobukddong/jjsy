@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Cormorant_Garamond } from 'next/font/google'
+import { Cormorant_Garamond, Playfair_Display } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { ThemeProvider } from '@/components/theme-provider'
 import './globals.css'
@@ -7,6 +7,13 @@ const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ['400', '600', '700'],
   variable: '--font-cormorant',
+  style: ['italic', 'normal']
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ['400', '700', '900'],
+  variable: '--font-playfair',
   style: ['italic', 'normal']
 });
 
@@ -35,7 +42,7 @@ export default function RootLayout({
       <head>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
       </head>
-      <body className={`bg-white dark:bg-black text-zinc-900 dark:text-white font-sans antialiased ${cormorant.variable} transition-colors duration-300`}>
+      <body className={`bg-white dark:bg-black text-zinc-900 dark:text-white font-sans antialiased ${cormorant.variable} ${playfair.variable} transition-colors duration-300`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

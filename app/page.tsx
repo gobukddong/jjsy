@@ -8,6 +8,7 @@ import { useTheme } from 'next-themes'
 import type { User } from '@supabase/supabase-js'
 import ProfileModal from '@/components/profile-modal'
 import VideoModal from '@/components/video-modal'
+import HeartPhysics, { HeartPhysicsRef } from '@/components/heart-physics'
 import { motion, AnimatePresence } from 'framer-motion'
 
 type Message = {
@@ -34,6 +35,7 @@ export default function Page() {
   const { theme, setTheme, resolvedTheme } = useTheme()
   const [user, setUser] = useState<User | null>(null)
   const [userProfile, setUserProfile] = useState<{ full_name: string | null, avatar_url: string | null } | null>(null)
+  const [partnerProfile, setPartnerProfile] = useState<{ full_name: string | null, avatar_url: string | null } | null>(null)
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'home' | 'chat'>('home')
   const [messages, setMessages] = useState<Message[]>([])
@@ -41,10 +43,13 @@ export default function Page() {
   const [inputValue, setInputValue] = useState('')
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
+  const [isPartnerImageOpen, setIsPartnerImageOpen] = useState(false)
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null)
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+  const [dDay, setDDay] = useState<number>(0)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const heartPhysicsRef = useRef<HeartPhysicsRef>(null)
 
   // 테마가 변경될 때 모바일 상태표시줄 색상(theme-color meta tag)도 동기화
   useEffect(() => {
@@ -63,6 +68,21 @@ export default function Page() {
     document.head.appendChild(newMeta)
   }, [theme, resolvedTheme])
 
+  // 디데이 계산
+  useEffect(() => {
+    const start = new Date('2024-02-26T00:00:00')
+    const updateDDay = () => {
+      const now = new Date()
+      const diff = now.getTime() - start.getTime()
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24)) + 1
+      setDDay(days)
+    }
+    updateDDay()
+    // 매분마다 체크해서 날짜가 바뀌면 업데이트 (부드러운 전환을 위해)
+    const timer = setInterval(updateDDay, 1000 * 60)
+    return () => clearInterval(timer)
+  }, [])
+
   // 로그인 체크 및 정보 로드
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -71,6 +91,7 @@ export default function Page() {
       } else {
         setUser(data.user)
         fetchUserProfile(data.user.id)
+        fetchPartnerProfile(data.user.id)
       }
     })
   }, [router])
@@ -82,6 +103,16 @@ export default function Page() {
       .eq('id', userId)
       .single()
     if (data) setUserProfile(data)
+  }
+
+  const fetchPartnerProfile = async (userId: string) => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('full_name, avatar_url')
+      .neq('id', userId)
+      .limit(1)
+      .maybeSingle()
+    if (data) setPartnerProfile(data)
   }
 
   // 데이터 로드
@@ -123,6 +154,7 @@ export default function Page() {
     const { data } = await supabase
       .from('videos')
       .select('*')
+      .order('video_date', { ascending: false })
       .order('created_at', { ascending: false })
     if (data) setVideos(data)
   }
@@ -175,11 +207,17 @@ export default function Page() {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-white transition-colors duration-300">
+      {/* Heart Physics Overlay */}
+      <HeartPhysics ref={heartPhysicsRef} />
+
       {/* Top Header: YouTube Style Realignment */}
       <header className="fixed top-0 w-full z-50 bg-white/70 dark:bg-black/70 backdrop-blur-xl border-b border-zinc-200/50 dark:border-zinc-800/50 transition-colors duration-300">
         <div className="h-16 flex items-center justify-between px-6">
-          <h1 className="text-3xl font-[family-name:var(--font-cormorant)] italic font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-zinc-800 via-zinc-500 to-zinc-400 dark:from-white dark:via-zinc-200 dark:to-zinc-500">
-            BBONG
+          <h1 
+            onClick={() => heartPhysicsRef.current?.addHeart()}
+            className="text-3xl font-[family-name:var(--font-playfair)] italic font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-zinc-800 via-zinc-500 to-zinc-400 dark:from-white dark:via-zinc-200 dark:to-zinc-500 cursor-pointer select-none active:scale-95 transition-transform"
+          >
+            {dDay > 0 ? `D+${dDay}` : 'D-DAY'}
           </h1>
           <div className="flex items-center gap-3">
             {/* Theme Toggle Button */}
@@ -204,6 +242,21 @@ export default function Page() {
               <Plus className="w-4 h-4" />
               <span>추가</span>
             </button>
+
+            {/* Partner Profile Icon (Zoomable) */}
+            {partnerProfile && (
+              <button 
+                onClick={() => setIsPartnerImageOpen(true)} 
+                className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 border-2 border-zinc-200 dark:border-zinc-700 overflow-hidden hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-lg flex items-center justify-center text-zinc-600 dark:text-zinc-400 group relative"
+                aria-label="상대방 프로필 크게 보기"
+              >
+                {partnerProfile.avatar_url ? (
+                  <img src={partnerProfile.avatar_url} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <UserCircle className="w-6 h-6" />
+                )}
+              </button>
+            )}
 
             <button 
               onClick={() => setIsProfileMenuOpen(true)} 
@@ -509,6 +562,40 @@ export default function Page() {
           onUpdate={fetchVideos}
         />
       )}
+
+      {/* Partner Image Zoom Modal */}
+      <AnimatePresence>
+        {isPartnerImageOpen && partnerProfile?.avatar_url && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsPartnerImageOpen(false)}
+            className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 cursor-zoom-out"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative max-w-4xl max-h-[90vh] w-fit h-fit flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img 
+                src={partnerProfile.avatar_url} 
+                alt="Partner Large" 
+                className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl pointer-events-none"
+              />
+              <button 
+                onClick={() => setIsPartnerImageOpen(false)}
+                className="absolute -top-12 right-0 p-2 text-white/70 hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="w-8 h-8" />
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
