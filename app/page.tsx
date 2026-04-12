@@ -117,6 +117,15 @@ export default function Page() {
     if (data) setPartnerProfile(data)
   }
 
+  // activeTabRef 업데이트 (구독 콜백에서 최신 값을 참조하기 위함)
+  const activeTabRef = useRef(activeTab)
+  useEffect(() => {
+    activeTabRef.current = activeTab
+    if (activeTab === 'chat') {
+      setUnreadCount(0)
+    }
+  }, [activeTab])
+
   // 데이터 로드
   useEffect(() => {
     if (!user) return
@@ -143,7 +152,7 @@ export default function Page() {
           })
 
           // 만약 현재 채팅 탭이 아니고, 내가 보낸 메시지가 아니라면 안읽음 카운트 증가
-          if (activeTabRef.current !== 'chat' && newMessage.user_id !== data.user.id) {
+          if (activeTabRef.current !== 'chat' && newMessage.user_id !== user.id) {
             setUnreadCount(prev => prev + 1)
           }
         }
@@ -152,15 +161,6 @@ export default function Page() {
 
     return () => { supabase.removeChannel(channel) }
   }, [user])
-
-  // activeTabRef 업데이트 (구독 콜백에서 최신 값을 참조하기 위함)
-  const activeTabRef = useRef(activeTab)
-  useEffect(() => {
-    activeTabRef.current = activeTab
-    if (activeTab === 'chat') {
-      setUnreadCount(0)
-    }
-  }, [activeTab])
 
   useEffect(() => {
     if (activeTab === 'chat') {
