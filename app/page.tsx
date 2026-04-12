@@ -49,6 +49,7 @@ export default function Page() {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const [dDay, setDDay] = useState<number>(0)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const lastActiveTab = useRef(activeTab)
   const heartPhysicsRef = useRef<HeartPhysicsRef>(null)
 
   // 테마가 변경될 때 모바일 상태표시줄 색상(theme-color meta tag)도 동기화
@@ -147,8 +148,32 @@ export default function Page() {
   }, [user])
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
+    if (activeTab === 'chat') {
+      const isInitialEntry = lastActiveTab.current !== 'chat'
+      
+      const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
+        messagesEndRef.current?.scrollIntoView({ behavior })
+      }
+
+      if (isInitialEntry) {
+        // Initial entry to chat: Use 'auto' behavior to jump to bottom instantly.
+        // Multiple timeouts to ensure it settles after the 0.3s tab transition.
+        scrollToBottom('auto')
+        const t1 = setTimeout(() => scrollToBottom('auto'), 100)
+        const t2 = setTimeout(() => scrollToBottom('auto'), 350)
+        lastActiveTab.current = 'chat'
+        return () => {
+          clearTimeout(t1)
+          clearTimeout(t2)
+        }
+      } else {
+        // Already in chat, just new messages: Smooth scroll.
+        scrollToBottom('smooth')
+      }
+    } else {
+      lastActiveTab.current = activeTab
+    }
+  }, [messages, activeTab])
 
   const fetchVideos = async () => {
     const { data } = await supabase
