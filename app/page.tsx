@@ -39,6 +39,7 @@ export default function Page() {
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'home' | 'chat'>('home')
   const [messages, setMessages] = useState<Message[]>([])
+  const [unreadCount, setUnreadCount] = useState(0)
   const [videos, setVideos] = useState<Video[]>([])
   const [inputValue, setInputValue] = useState('')
   const [isProfileOpen, setIsProfileOpen] = useState(false)
@@ -140,12 +141,26 @@ export default function Page() {
             if (prev.find((m) => m.id === newMessage.id)) return prev
             return [...prev, messageWithProfile]
           })
+
+          // 만약 현재 채팅 탭이 아니고, 내가 보낸 메시지가 아니라면 안읽음 카운트 증가
+          if (activeTabRef.current !== 'chat' && newMessage.user_id !== data.user.id) {
+            setUnreadCount(prev => prev + 1)
+          }
         }
       )
       .subscribe()
 
     return () => { supabase.removeChannel(channel) }
   }, [user])
+
+  // activeTabRef 업데이트 (구독 콜백에서 최신 값을 참조하기 위함)
+  const activeTabRef = useRef(activeTab)
+  useEffect(() => {
+    activeTabRef.current = activeTab
+    if (activeTab === 'chat') {
+      setUnreadCount(0)
+    }
+  }, [activeTab])
 
   useEffect(() => {
     if (activeTab === 'chat') {
@@ -470,7 +485,14 @@ export default function Page() {
             <Home className={`w-6 h-6 transition-transform group-active:scale-95 ${activeTab === 'home' ? 'text-[#009bcb] dark:text-[#862633]' : 'text-zinc-500 group-hover:text-zinc-600 dark:group-hover:text-zinc-400'}`} />
           </button>
           <button onClick={() => setActiveTab('chat')} className="flex flex-col items-center justify-center gap-1 flex-1 h-full transition-all cursor-pointer group active:scale-[0.95]">
-            <MessageCircle className={`w-6 h-6 transition-colors ${activeTab === 'chat' ? 'text-[#009bcb] dark:text-[#862633]' : 'text-zinc-500 group-hover:text-zinc-600 dark:group-hover:text-zinc-400'}`} />
+            <div className="relative">
+              <MessageCircle className={`w-6 h-6 transition-colors ${activeTab === 'chat' ? 'text-[#009bcb] dark:text-[#862633]' : 'text-zinc-500 group-hover:text-zinc-600 dark:group-hover:text-zinc-400'}`} />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 bg-[#ff4d4f] text-white text-[10px] font-bold min-w-[16px] h-[16px] px-1 rounded-full flex items-center justify-center border-2 border-white dark:border-zinc-950 shadow-sm animate-in zoom-in duration-200">
+                  {unreadCount}
+                </span>
+              )}
+            </div>
           </button>
         </div>
       </nav>
