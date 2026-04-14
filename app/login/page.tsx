@@ -33,21 +33,29 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#ffecd2] to-[#fcb69f] dark:from-[#2e1437] dark:via-[#141526] dark:to-[#172552] animate-gradient-x transition-colors duration-500">
-      {/* Floating Orbs for Magical Aura */}
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-zinc-50 dark:bg-[#050505] transition-colors duration-500">
+      
+      {/* 1. Animated Glowing Orbs (Geometric Blobs) */}
       <motion.div 
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 2, ease: "easeOut" }}
-        className="absolute top-[20%] left-[10%] w-72 h-72 bg-rose-400/30 dark:bg-purple-600/30 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[60px] animate-pulse" 
-        style={{ animationDuration: '4s' }} 
+        animate={{ scale: [1, 1.1, 1], rotate: [0, 45, 0] }}
+        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] min-w-[500px] min-h-[500px] bg-gradient-to-br from-[#009bcb]/20 to-cyan-400/20 dark:from-[#009bcb]/30 dark:to-indigo-600/20 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] opacity-80" 
       />
       <motion.div 
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 2, ease: "easeOut", delay: 0.5 }}
-        className="absolute bottom-[20%] right-[10%] w-80 h-80 bg-orange-300/30 dark:bg-pink-600/20 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[60px] animate-pulse" 
-        style={{ animationDuration: '7s' }} 
+        animate={{ scale: [1, 1.2, 1], rotate: [0, -45, 0] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] min-w-[400px] min-h-[400px] bg-gradient-to-tl from-rose-400/20 to-orange-400/20 dark:from-[#862633]/30 dark:to-rose-600/20 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] opacity-80" 
+      />
+
+      {/* 2. Premium Geometric Grid Overlay */}
+      <div 
+        className="absolute inset-0 z-0 opacity-10 dark:opacity-20 pointer-events-none text-zinc-900 dark:text-white"
+        style={{
+          backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
+          backgroundSize: '40px 40px',
+          maskImage: 'radial-gradient(circle at center, black 30%, transparent 100%)',
+          WebkitMaskImage: 'radial-gradient(circle at center, black 30%, transparent 100%)'
+        }}
       />
       
       <motion.div 
@@ -59,12 +67,9 @@ export default function LoginPage() {
         {/* Glassmorphism Panel */}
         <div className="glass-panel p-8 rounded-[2rem]">
           <div className="flex flex-col items-center mb-8">
-            <h1 className="text-zinc-800 dark:text-white text-3xl font-[family-name:var(--font-cormorant)] italic font-bold tracking-wider text-center">
-              Our Private Space
+            <h1 className="text-zinc-900 dark:text-white text-3xl font-[family-name:var(--font-outfit)] font-extrabold tracking-tight text-center drop-shadow-sm">
+              로그인
             </h1>
-            <p className="text-zinc-600 dark:text-white/60 text-sm mt-1 font-medium tracking-wide">
-              jinjoo & sangyun
-            </p>
           </div>
 
           <form onSubmit={handleLogin} className="flex flex-col gap-4">
