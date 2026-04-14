@@ -39,22 +39,22 @@ export default function LoginPage() {
       <motion.div 
         animate={{ scale: [1, 1.1, 1], rotate: [0, 45, 0] }}
         transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] min-w-[500px] min-h-[500px] bg-gradient-to-br from-[#009bcb]/20 to-cyan-400/20 dark:from-[#009bcb]/30 dark:to-indigo-600/20 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] opacity-80" 
+        className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] min-w-[500px] min-h-[500px] bg-gradient-to-br from-[#009bcb]/20 to-cyan-400/20 dark:from-[#009bcb]/30 dark:to-indigo-600/20 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[80px] opacity-80 transform-gpu will-change-transform" 
       />
       <motion.div 
         animate={{ scale: [1, 1.2, 1], rotate: [0, -45, 0] }}
         transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] min-w-[400px] min-h-[400px] bg-gradient-to-tl from-rose-400/20 to-orange-400/20 dark:from-[#862633]/30 dark:to-rose-600/20 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] opacity-80" 
+        className="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] min-w-[400px] min-h-[400px] bg-gradient-to-tl from-rose-400/20 to-orange-400/20 dark:from-[#862633]/30 dark:to-rose-600/20 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[80px] opacity-80 transform-gpu will-change-transform" 
       />
 
       {/* 2. Premium Geometric Grid Overlay */}
       <div 
-        className="absolute inset-0 z-0 opacity-10 dark:opacity-20 pointer-events-none text-zinc-900 dark:text-white"
+        className="absolute inset-0 z-0 opacity-[0.07] dark:opacity-[0.15] pointer-events-none text-zinc-900 dark:text-white transform-gpu"
         style={{
           backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
           backgroundSize: '40px 40px',
-          maskImage: 'radial-gradient(circle at center, black 30%, transparent 100%)',
-          WebkitMaskImage: 'radial-gradient(circle at center, black 30%, transparent 100%)'
+          maskImage: 'radial-gradient(circle at center, black 40%, transparent 100%)',
+          WebkitMaskImage: 'radial-gradient(circle at center, black 40%, transparent 100%)'
         }}
       />
       
@@ -62,7 +62,7 @@ export default function LoginPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative w-full max-w-[360px] z-10 px-4"
+        className="relative w-full max-w-[360px] z-10 px-4 transform-gpu will-change-transform"
       >
         {/* Glassmorphism Panel */}
         <div className="glass-panel p-8 rounded-[2rem]">

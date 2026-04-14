@@ -170,7 +170,10 @@ export default function Page() {
       const isInitialEntry = lastActiveTab.current !== 'chat'
       
       const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
-        messagesEndRef.current?.scrollIntoView({ behavior })
+        const container = messagesEndRef.current?.parentElement
+        if (container) {
+          container.scrollTo({ top: container.scrollHeight, behavior })
+        }
       }
 
       if (isInitialEntry) {
