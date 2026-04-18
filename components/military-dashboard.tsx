@@ -213,7 +213,7 @@ export default function MilitaryDashboard({ userId }: MilitaryDashboardProps) {
   }
 
   return (
-    <div className="w-full bg-white dark:bg-[#111] min-h-full pb-24 selection:bg-[#62A18D]/30">
+    <div className="w-full bg-transparent min-h-full pb-24 selection:bg-[#62A18D]/30">
       
       {/* Top Profile Section */}
       <div className="px-6 py-10 flex items-center gap-6">
@@ -235,33 +235,37 @@ export default function MilitaryDashboard({ userId }: MilitaryDashboardProps) {
         
         {/* Profile Info */}
         <div className="flex flex-col gap-1.5 flex-1 w-full min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="text-xl sm:text-2xl font-medium text-zinc-600 dark:text-zinc-400 tracking-tight flex-shrink-0">{displayRankName}</span>
-            {isEditingName ? (
-              <input 
-                ref={nameInputRef}
-                type="text" 
-                value={partnerName}
-                onChange={(e) => setPartnerName(e.target.value)}
-                onBlur={handleNameSave}
-                onKeyDown={(e) => { if (e.key === 'Enter') handleNameSave() }}
-                className="w-full max-w-[140px] bg-transparent border-b-2 border-zinc-900 dark:border-white outline-none tracking-tight text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-white"
-                placeholder="별명 입력"
-              />
-            ) : (
-              <h2 
-                onClick={() => setIsEditingName(true)} 
-                className="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight truncate cursor-pointer hover:opacity-70 transition-opacity"
+          <div className="flex items-start gap-2 pt-0.5">
+            <span className="text-xl sm:text-2xl font-medium text-zinc-600 dark:text-zinc-400 tracking-tight flex-shrink-0 mt-[1px]">{displayRankName}</span>
+            <div className="flex-1 min-w-0 flex items-start gap-1">
+              {isEditingName ? (
+                <input 
+                  ref={nameInputRef}
+                  type="text" 
+                  maxLength={20}
+                  value={partnerName}
+                  onChange={(e) => setPartnerName(e.target.value)}
+                  onBlur={handleNameSave}
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleNameSave() }}
+                  className="w-full bg-transparent border-b-2 border-zinc-900 dark:border-white outline-none tracking-tight text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-white"
+                  placeholder="별명 입력"
+                />
+              ) : (
+                <h2 
+                  onClick={() => setIsEditingName(true)} 
+                  className="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight break-words whitespace-normal leading-[1.2] cursor-pointer hover:opacity-70 transition-opacity"
+                  style={{ wordBreak: 'keep-all', overflowWrap: 'anywhere' }}
+                >
+                  {partnerName}
+                </h2>
+              )}
+              <button 
+                onClick={() => isEditingName ? handleNameSave() : setIsEditingName(true)}
+                className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 p-1.5 rounded-full transition-colors flex-shrink-0"
               >
-                {partnerName}
-              </h2>
-            )}
-            <button 
-              onClick={() => isEditingName ? handleNameSave() : setIsEditingName(true)}
-              className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 p-1 rounded-full transition-colors ml-[-4px]"
-            >
-              <Edit2 className="w-4 h-4" />
-            </button>
+                <Edit2 className="w-[18px] h-[18px]" />
+              </button>
+            </div>
           </div>
           
           <div className="text-sm font-medium text-zinc-600 dark:text-zinc-400 mt-2 flex flex-col gap-1">
