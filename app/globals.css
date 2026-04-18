@@ -118,7 +118,7 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring/50 transition-colors duration-300;
   }
   body {
     @apply bg-background text-foreground;
@@ -135,6 +135,15 @@
   .glass-panel {
     @apply bg-white/10 dark:bg-black/20 backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.1)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.5)];
   }
+
+  .animate-liquid {
+    background-size: 200% 100%;
+    animation: liquid-pan 2s linear infinite;
+  }
+  
+  .masking-tape {
+    @apply absolute -top-1.5 left-1/2 -translate-x-1/2 w-[40px] h-[12px] bg-white/80 dark:bg-zinc-200/90 shadow-[0_1px_2px_rgba(0,0,0,0.1)] z-20 backdrop-blur-sm mix-blend-overlay dark:mix-blend-normal rotate-[-3deg] rounded-[1px];
+  }
 }
 
 @keyframes gradient-x {
@@ -144,4 +153,9 @@
   50% {
     background-position: 100% 50%;
   }
+}
+
+@keyframes liquid-pan {
+  0% { background-position: 200% 50%; }
+  100% { background-position: 0% 50%; }
 }

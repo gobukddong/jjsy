@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Home, MessageCircle, Send, LogOut, User as UserIcon, UserCircle, Plus, Edit2, X, Sun, Moon, Calendar as CalendarIcon } from 'lucide-react'
+import { Home, MessageCircle, Send, LogOut, User as UserIcon, UserCircle, Plus, Edit2, X, Sun, Moon, Calendar as CalendarIcon, Shield } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
@@ -10,6 +10,7 @@ import ProfileModal from '@/components/profile-modal'
 import VideoModal from '@/components/video-modal'
 import HeartPhysics, { HeartPhysicsRef } from '@/components/heart-physics'
 import CalendarView from '@/components/calendar-view'
+import MilitaryDashboard from '@/components/military-dashboard'
 import { motion, AnimatePresence } from 'framer-motion'
 
 type Message = {
@@ -38,7 +39,7 @@ export default function Page() {
   const [userProfile, setUserProfile] = useState<{ full_name: string | null, avatar_url: string | null } | null>(null)
   const [partnerProfile, setPartnerProfile] = useState<{ full_name: string | null, avatar_url: string | null } | null>(null)
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<'home' | 'chat' | 'calendar'>('home')
+  const [activeTab, setActiveTab] = useState<'home' | 'chat' | 'calendar' | 'military'>('home')
   const [messages, setMessages] = useState<Message[]>([])
   const [isVideosLoading, setIsVideosLoading] = useState(true)
   const [isMessagesLoading, setIsMessagesLoading] = useState(true)
@@ -255,7 +256,7 @@ export default function Page() {
 
   if (!user) return null
 
-  const tabValues: Record<string, number> = { home: 0, calendar: 1, chat: 2 }
+  const tabValues: Record<string, number> = { home: 0, calendar: 1, military: 2, chat: 3 }
 
   return (
     <div className="h-[100dvh] w-full overflow-hidden relative bg-zinc-50 dark:bg-[#050505] text-zinc-900 dark:text-zinc-100 font-sans selection:bg-[#009bcb]/30 dark:selection:bg-[#862633]/30">
@@ -528,10 +529,15 @@ export default function Page() {
                   </motion.button>
                 </div>
               </div>
-            ) : (
+            ) : activeTab === 'calendar' ? (
               // Calendar View
               <div className="h-[calc(100dvh-4rem)] overflow-y-auto pb-[7rem]">
                 <CalendarView userId={user.id} />
+              </div>
+            ) : (
+              // Military Dashboard View
+              <div id="military-scroll-container" className="h-[calc(100dvh-4rem)] overflow-y-auto pb-[7rem] scroll-smooth">
+                <MilitaryDashboard userId={user.id} />
               </div>
             )}
           </motion.div>
@@ -544,16 +550,19 @@ export default function Page() {
           {[
             { id: 'home', icon: Home, label: '홈' },
             { id: 'calendar', icon: CalendarIcon, label: '달력' },
+            { id: 'military', icon: Shield, label: '군대' },
             { id: 'chat', icon: MessageCircle, label: '문자' },
           ].map((item) => {
             const isActive = activeTab === item.id
             const Icon = item.icon
 
             return (
-              <button
+              <motion.button
                 key={item.id}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={() => {
-                  if (navigator.vibrate) navigator.vibrate(15)
+                  if (navigator.vibrate) navigator.vibrate(10)
                   setActiveTab(item.id as any)
                 }}
                 className={`relative flex items-center justify-center h-12 rounded-full transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${
@@ -579,7 +588,7 @@ export default function Page() {
                     {unreadCount}
                   </span>
                 )}
-              </button>
+              </motion.button>
             )
           })}
         </div>

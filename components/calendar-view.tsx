@@ -103,7 +103,7 @@ export default function CalendarView({ userId }: { userId: string }) {
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto p-4 flex flex-col bg-zinc-50 dark:bg-black min-h-max pb-12">
+    <div className="w-full max-w-5xl mx-auto px-1 sm:px-4 py-2 sm:py-4 flex flex-col bg-zinc-50 dark:bg-black min-h-max pb-12">
       {/* Header */}
       <div className="flex items-center justify-between mb-4 px-2">
         <button onClick={prevMonth} className="p-2 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors">

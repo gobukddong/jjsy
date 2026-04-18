@@ -89,9 +89,14 @@ const HeartPhysics = forwardRef<HeartPhysicsRef>((props, ref) => {
 
     Matter.Composite.add(world, [ground, leftWall, rightWall])
 
-    const runner = Matter.Runner.create()
-    Matter.Runner.run(runner, engine)
     Matter.Render.run(render)
+
+    let animationFrameId: number
+    const loop = () => {
+      Matter.Engine.update(engine, 1000 / 60)
+      animationFrameId = requestAnimationFrame(loop)
+    }
+    loop()
 
     // Vortex Logic & Cleanup
     Matter.Events.on(engine, 'beforeUpdate', () => {
@@ -168,8 +173,8 @@ const HeartPhysics = forwardRef<HeartPhysicsRef>((props, ref) => {
     window.addEventListener('resize', handleResize)
 
     return () => {
+      cancelAnimationFrame(animationFrameId)
       Matter.Render.stop(render)
-      Matter.Runner.stop(runner)
       Matter.Engine.clear(engine)
       window.removeEventListener('resize', handleResize)
     }
